@@ -4,6 +4,11 @@ import './App.css';
 
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
+import Post from './Post/Post'
+
+import axios from 'axios'
+
+//Base URL: https://github.com/DevMountain/react-3-afternoon/api
 
 class App extends Component {
   constructor() {
@@ -19,15 +24,28 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+    axios.get('https://github.com/DevMountain/react-3-afternoon/api/posts')
+    .then(res => {
+      this.setState({ posts: res.data })
+    })
+    .catch(err => console.log(err))
+    
   }
 
-  updatePost() {
-  
+  updatePost(id, text) {
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${ id }`, { text })
+   .then(res => {
+        this.setState({ posts: res.data })
+      })
+      .catch(err => console.log(err))
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${ id }`)
+      .then(res => {
+        this.setState({ posts: res.data })
+      })
+      .catch(err => console.log(err))
   }
 
   createPost() {
@@ -44,6 +62,15 @@ class App extends Component {
         <section className="App__content">
 
           <Compose />
+          {
+            posts.map(post => (
+              <Post key={ post.id }
+                    text={ post.text }
+                    date={ post.date }
+                    id={ post.id }
+                    updatePostFn={ this.updatePost } />
+            ))
+          }
           
         </section>
       </div>
